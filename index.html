@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The History of Israel Quiz</title>
+<meta name="description" content="18 questions on the history of Israel, from the First Zionist Congress to the Abraham Accords. Score points for speed and streaks.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #E9ECE9;
+    --surface: #F8F9F7;
+    --ink: #14283B;
+    --muted: #566672;
+    --sea: #1B5E7B;
+    --gold: #B8860B;
+    --good: #2B7A55;
+    --good-bg: #DDEEE5;
+    --bad: #B4412F;
+    --bad-bg: #F5DFDA;
+    --line: #C7CFCC;
+    --serif: "Frank Ruhl Libre", Georgia, "Times New Roman", serif;
+    --sans: "Rubik", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.55;
+    min-height: 100vh;
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 40px 20px 72px; }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 900; line-height: 1.1; margin: 0; letter-spacing: -0.01em; }
+  p { margin: 0; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--sea); outline-offset: 3px; }
+
+  /* Buttons */
+  .btn {
+    border: 2px solid var(--ink);
+    background: var(--ink);
+    color: #fff;
+    padding: 13px 22px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: transform .08s ease, background .15s ease;
+  }
+  .btn:hover { background: #0c1a28; }
+  .btn:active { transform: translateY(1px); }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn.ghost:hover { background: rgba(20,40,59,.07); }
+
+  /* Start screen */
+  .start h1 { font-size: clamp(2.6rem, 9vw, 4.4rem); max-width: 11ch; }
+  .start .lede { margin-top: 18px; max-width: 46ch; color: var(--muted); font-size: 1.08rem; }
+
+  .years {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin: 44px 0 40px;
+    padding-top: 22px;
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .years::before {
+    content: "";
+    position: absolute; left: 0; right: 0; top: 5px;
+    height: 2px; background: var(--ink);
+  }
+  .years span { position: relative; }
+  .years span::before {
+    content: "";
+    position: absolute; top: -22px; left: 50%;
+    width: 12px; height: 12px; margin-left: -6px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--ink);
+  }
+  .years span.mark::before { background: var(--gold); border-color: var(--gold); }
+
+  .modes { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+  .mode {
+    text-align: left;
+    background: var(--surface);
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 18px 18px 16px;
+    transition: transform .08s ease, box-shadow .15s ease;
+  }
+  .mode:hover { box-shadow: 4px 4px 0 var(--ink); transform: translate(-2px, -2px); }
+  .mode strong { display: block; font-family: var(--serif); font-size: 1.4rem; font-weight: 900; }
+  .mode span { color: var(--muted); font-size: .95rem; }
+
+  .rules { margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: .96rem; display: grid; gap: 6px; }
+  .rules b { color: var(--ink); font-weight: 500; }
+  .bests { margin-top: 14px; font-size: .96rem; color: var(--muted); }
+
+  /* Play screen */
+  .topline { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .count { color: var(--muted); font-size: .95rem; }
+  .score { font-family: var(--serif); font-weight: 900; font-size: 1.6rem; color: var(--ink); }
+  .score small { font-family: var(--sans); font-weight: 400; font-size: .85rem; color: var(--muted); margin-right: 6px; }
+
+  .track { display: flex; align-items: center; margin: 14px 0 18px; }
+  .node {
+    flex: 0 0 auto;
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 2px solid var(--line);
+    background: var(--bg);
+    transition: background .2s ease, border-color .2s ease, transform .2s ease;
+  }
+  .seg { flex: 1 1 0; height: 2px; background: var(--line); min-width: 2px; }
+  .node.now { border-color: var(--ink); transform: scale(1.35); }
+  .node.right { background: var(--good); border-color: var(--good); }
+  .node.wrong { background: var(--bad); border-color: var(--bad); }
+
+  .timer { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+  .timer > div { height: 100%; background: var(--sea); transform-origin: left; transition: background .3s ease; }
+  .timer.low > div { background: var(--bad); }
+  .time-text { text-align: right; font-size: .85rem; color: var(--muted); margin-top: 4px; font-variant-numeric: tabular-nums; }
+
+  .prompt { font-size: clamp(1.5rem, 5vw, 2.1rem); margin: 22px 0 24px; font-weight: 700; line-height: 1.2; }
+
+  .options { display: grid; gap: 10px; }
+  .opt {
+    display: flex; align-items: center; gap: 14px;
+    text-align: left;
+    background: var(--surface);
+    border: 2px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 16px;
+    transition: border-color .12s ease, background .12s ease;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--ink); }
+  .opt .key {
+    flex: 0 0 auto;
+    width: 28px; height: 28px;
+    display: grid; place-items: center;
+    border-radius: 50%;
+    border: 1.5px solid var(--muted);
+    font-size: .82rem; font-weight: 500; color: var(--muted);
+  }
+  .opt:disabled { cursor: default; }
+  .opt.correct { border-color: var(--good); background: var(--good-bg); }
+  .opt.correct .key { background: var(--good); border-color: var(--good); color: #fff; }
+  .opt.incorrect { border-color: var(--bad); background: var(--bad-bg); }
+  .opt.incorrect .key { background: var(--bad); border-color: var(--bad); color: #fff; }
+  .opt.dim { opacity: .55; }
+
+  .feedback { margin-top: 22px; padding: 18px 20px; background: var(--surface); border-left: 5px solid var(--ink); border-radius: 0 8px 8px 0; }
+  .feedback.ok { border-color: var(--good); }
+  .feedback.no { border-color: var(--bad); }
+  .feedback h3 { font-size: 1.35rem; }
+  .feedback .pts { margin-top: 2px; font-size: .92rem; color: var(--muted); }
+  .feedback .why { margin-top: 10px; }
+  .feedback .btn { margin-top: 16px; }
+
+  /* End screen */
+  .end .kicker { color: var(--muted); }
+  .end .big { font-family: var(--serif); font-weight: 900; font-size: clamp(4rem, 17vw, 7.5rem); line-height: 1; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .end .rank { font-family: var(--serif); font-size: 1.6rem; font-weight: 700; margin-top: 8px; color: var(--sea); }
+  .end .rank-note { color: var(--muted); margin-top: 4px; max-width: 46ch; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); margin: 30px 0 26px; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--line); }
+  .stats div { padding: 14px 0; }
+  .stats div + div { padding-left: 16px; border-left: 1px solid var(--line); }
+  .stats dt { color: var(--muted); font-size: .88rem; }
+  .stats dd { margin: 0; font-family: var(--serif); font-weight: 900; font-size: 1.8rem; }
+  .best-line { color: var(--muted); margin-bottom: 22px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .copied { margin-top: 10px; font-size: .92rem; color: var(--good); min-height: 1.4em; }
+
+  details.review { margin-top: 34px; border-top: 1px solid var(--line); padding-top: 14px; }
+  details.review summary { cursor: pointer; font-weight: 500; padding: 6px 0; }
+  .rev-item { padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .rev-item h4 { margin: 0 0 6px; font-family: var(--serif); font-size: 1.15rem; font-weight: 700; line-height: 1.3; }
+  .rev-item .tag { font-size: .85rem; font-weight: 500; margin-right: 8px; }
+  .rev-item .tag.ok { color: var(--good); }
+  .rev-item .tag.no { color: var(--bad); }
+  .rev-item p { color: var(--muted); font-size: .96rem; }
+  .rev-item p b { color: var(--ink); font-weight: 500; }
+
+  footer { margin-top: 48px; color: var(--muted); font-size: .85rem; }
+
+  @media (max-width: 520px) {
+    body { font-size: 16px; }
+    main { padding: 28px 16px 56px; }
+    .modes { grid-template-columns: 1fr; }
+    .years { font-size: .88rem; }
+    .stats dd { font-size: 1.5rem; }
+    .stats div + div { padding-left: 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <!-- START -->
+  <section id="start" class="screen start">
+    <h1>The History of Israel</h1>
+    <p class="lede">18 questions, from the First Zionist Congress to the Abraham Accords. Answer fast for bonus points.</p>
+
+    <div class="years" aria-hidden="true">
+      <span>1896</span><span>1917</span><span class="mark">1948</span><span>1967</span><span>1973</span><span>1979</span><span>1994</span>
+    </div>
+
+    <div class="modes">
+      <button class="mode" data-mode="full"><strong>Full quiz</strong><span>All 18 questions, shuffled</span></button>
+      <button class="mode" data-mode="quick"><strong>Quick round</strong><span>10 random questions</span></button>
+    </div>
+
+    <div class="rules">
+      <p><b>100 points</b> for every correct answer.</p>
+      <p><b>Up to 50 bonus</b> for answering quickly. You get 20 seconds per question.</p>
+      <p><b>Up to 40 bonus</b> for a streak of correct answers in a row.</p>
+      <p>Use the 1 to 4 keys to answer if you’re on a keyboard.</p>
+    </div>
+    <p class="bests" id="bests"></p>
+  </section>
+
+  <!-- PLAY -->
+  <section id="play" class="screen" hidden>
+    <div class="topline">
+      <span class="count" id="count"></span>
+      <span class="score"><small>Score</small><span id="score">0</span></span>
+    </div>
+    <div class="track" id="track" aria-hidden="true"></div>
+    <div class="timer" id="timer" aria-hidden="true"><div id="bar"></div></div>
+    <div class="time-text" id="timeText" aria-hidden="true"></div>
+
+    <h2 class="prompt" id="prompt"></h2>
+    <div class="options" id="options"></div>
+
+    <div class="feedback" id="feedback" hidden aria-live="polite">
+      <h3 id="verdict"></h3>
+      <p class="pts" id="pts"></p>
+      <p class="why" id="why"></p>
+      <button class="btn" id="next"></button>
+    </div>
+  </section>
+
+  <!-- END -->
+  <section id="end" class="screen end" hidden>
+    <p class="kicker" id="endKicker"></p>
+    <div class="big" id="finalScore"></div>
+    <div class="rank" id="rank"></div>
+    <p class="rank-note" id="rankNote"></p>
+
+    <dl class="stats">
+      <div><dt>Correct</dt><dd id="sCorrect"></dd></div>
+      <div><dt>Accuracy</dt><dd id="sAcc"></dd></div>
+      <div><dt>Best streak</dt><dd id="sStreak"></dd></div>
+    </dl>
+    <p class="best-line" id="bestLine"></p>
+
+    <div class="actions">
+      <button class="btn" id="again">Play again</button>
+      <button class="btn ghost" id="share">Copy my result</button>
+      <button class="btn ghost" id="home">Change mode</button>
+    </div>
+    <p class="copied" id="copied" aria-live="polite"></p>
+
+    <details class="review">
+      <summary>Review your answers</summary>
+      <div id="reviewList"></div>
+    </details>
+  </section>
+
+  <footer>Dates and facts are kept to widely documented events. Want to check anything? Each answer comes with a short explanation.</footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  var TIME_LIMIT = 20;          // seconds per question
+  var BASE = 100, SPEED_MAX = 50, STREAK_STEP = 10, STREAK_CAP = 4;
+
+  // ---------- Question bank ----------
+  // c = index of the correct answer in a (options get shuffled when played)
+  var QUESTIONS = [
+    { q: "Who wrote the 1896 book “The Jewish State”, a key text of political Zionism?",
+      a: ["Chaim Weizmann", "Theodor Herzl", "David Ben-Gurion", "Golda Meir"], c: 1,
+      why: "Theodor Herzl published it in 1896 and went on to help organise the First Zionist Congress the following year." },
+    { q: "Where was the First Zionist Congress held in 1897?",
+      a: ["Vienna", "Paris", "Basel", "London"], c: 2,
+      why: "Herzl convened the Congress in Basel, Switzerland, in August 1897." },
+    { q: "The 1917 Balfour Declaration expressed support for a Jewish “national home” in Palestine. Which government issued it?",
+      a: ["France", "The Ottoman Empire", "The United States", "Britain"], c: 3,
+      why: "It came from the British government, in a letter from Foreign Secretary Arthur Balfour. Britain then ruled Palestine under a League of Nations mandate until 1948." },
+    { q: "Degania, founded in 1909 near the Sea of Galilee, was the first of what?",
+      a: ["Kibbutz", "Kingdom", "University", "Railway station"], c: 0,
+      why: "A kibbutz is a collective community, originally farming-based. Degania is usually counted as the first one." },
+    { q: "Who is best known for reviving Hebrew as an everyday spoken language?",
+      a: ["Eliezer Ben-Yehuda", "Moses Hess", "Yitzhak Rabin", "Max Nordau"], c: 0,
+      why: "Eliezer Ben-Yehuda moved to Ottoman Palestine in 1881 and pushed for Hebrew in daily life, and he compiled a major dictionary." },
+    { q: "In 1947 the UN General Assembly voted on a plan to split British-ruled Palestine into Jewish and Arab states. What was it called?",
+      a: ["The Partition Plan (Resolution 181)", "The Oslo Accords", "The Camp David Accords", "Resolution 242"], c: 0,
+      why: "Resolution 181 passed in November 1947. Jewish leaders accepted it; Arab leaders rejected it." },
+    { q: "On what date did David Ben-Gurion proclaim the State of Israel?",
+      a: ["29 November 1947", "14 May 1948", "5 June 1967", "6 October 1973"], c: 1,
+      why: "He read the Declaration of Independence in Tel Aviv on 14 May 1948, the last day of the British Mandate. Neighbouring Arab states invaded the next day, starting the 1948 war." },
+    { q: "Who became Israel’s first president?",
+      a: ["David Ben-Gurion", "Chaim Weizmann", "Levi Eshkol", "Menachem Begin"], c: 1,
+      why: "Chaim Weizmann, a chemist and long-time Zionist leader, was the first president (1949 to 1952). Ben-Gurion was the first prime minister." },
+    { q: "What did Israel’s 1950 Law of Return grant?",
+      a: ["Free university education", "The right of Jews worldwide to immigrate and gain citizenship", "Compensation for lost property", "A seat in the Knesset for every district"], c: 1,
+      why: "The Law of Return gives Jews the right to immigrate to Israel and become citizens. It was later extended to their children and grandchildren and to their spouses." },
+    { q: "In 1956 Egypt’s president Nasser nationalised which waterway, setting off a crisis that Israel, Britain and France took part in?",
+      a: ["The Jordan River", "The Suez Canal", "The Nile Delta", "The Bosphorus"], c: 1,
+      why: "Nasser nationalised the Suez Canal in July 1956. Israel invaded the Sinai that October, followed by Britain and France." },
+    { q: "How long did the 1967 war between Israel and Egypt, Jordan and Syria last?",
+      a: ["Six months", "Six weeks", "Six days", "Six hours"], c: 2,
+      why: "The Six-Day War ran 5 to 10 June 1967. Israel took the Sinai Peninsula, Gaza Strip, West Bank, East Jerusalem and Golan Heights." },
+    { q: "Which woman served as Israel’s prime minister from 1969 to 1974?",
+      a: ["Tzipi Livni", "Golda Meir", "Shulamit Aloni", "Rachel Yanait"], c: 1,
+      why: "Golda Meir took office in March 1969 and resigned in 1974 after the Yom Kippur War." },
+    { q: "The 1973 war began with a surprise attack by Egypt and Syria on a major Jewish holy day. What’s it called?",
+      a: ["The Suez Crisis", "The War of Attrition", "The Yom Kippur War", "The Lebanon War"], c: 2,
+      why: "It started on 6 October 1973, which was Yom Kippur. Israel pushed back the attacks but took heavy losses, and the war led to later peace talks with Egypt." },
+    { q: "In 1976 Israeli commandos rescued hostages from a hijacked Air France plane at an airport in which country?",
+      a: ["Kenya", "Uganda", "Cyprus", "Ethiopia"], c: 1,
+      why: "The hijacked flight was taken to Entebbe, Uganda. The rescue, called Operation Thunderbolt, freed most of the hostages in a night raid in July 1976." },
+    { q: "In 1979 Israel signed a peace treaty with the first Arab country to do so. Which one?",
+      a: ["Jordan", "Syria", "Lebanon", "Egypt"], c: 3,
+      why: "Egypt’s Anwar Sadat and Israel’s Menachem Begin signed it in Washington on 26 March 1979, after the 1978 Camp David Accords brokered by US President Jimmy Carter. Israel withdrew from the Sinai as part of it." },
+    { q: "Which country became the second Arab state to sign a peace treaty with Israel, in 1994?",
+      a: ["Saudi Arabia", "Iraq", "Morocco", "Jordan"], c: 3,
+      why: "The Israel–Jordan peace treaty was signed on 26 October 1994 in the Arabah valley." },
+    { q: "Which Israeli prime minister was assassinated in 1995 at a peace rally in Tel Aviv?",
+      a: ["Yitzhak Rabin", "Shimon Peres", "Ariel Sharon", "Levi Eshkol"], c: 0,
+      why: "Yitzhak Rabin was shot on 4 November 1995 by an Israeli man who opposed the Oslo peace process." },
+    { q: "Which two countries signed the Abraham Accords with Israel at the White House in 2020?",
+      a: ["Egypt and Jordan", "Oman and Qatar", "The UAE and Bahrain", "Turkey and Kuwait"], c: 2,
+      why: "The United Arab Emirates and Bahrain signed in September 2020. Morocco and Sudan agreed to normalise relations later that year." }
+  ];
+
+  var MODES = {
+    full:  { label: "Full quiz",   count: QUESTIONS.length },
+    quick: { label: "Quick round", count: 10 }
+  };
+
+  // ---------- Helpers ----------
+  function $(id) { return document.getElementById(id); }
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function fmt(n) { return n.toLocaleString("en-US"); }
+  function store(key, val) {
+    try {
+      if (val === undefined) return window.localStorage.getItem(key);
+      window.localStorage.setItem(key, String(val));
+    } catch (e) { return null; }
+  }
+
+  // ---------- State ----------
+  var S = null;       // current run
+  var timerId = null;
+
+  function showScreen(name) {
+    ["start", "play", "end"].forEach(function (n) { $(n).hidden = (n !== name); });
+    window.scrollTo(0, 0);
+  }
+
+  function renderBests() {
+    var parts = [];
+    Object.keys(MODES).forEach(function (m) {
+      var b = parseInt(store("israelquiz:best:" + m), 10);
+      if (b) parts.push(MODES[m].label + ": " + fmt(b));
+    });
+    $("bests").textContent = parts.length ? "Your best scores. " + parts.join(", ") + "." : "";
+  }
+
+  // ---------- Run ----------
+  function startRun(mode) {
+    var picked = shuffle(QUESTIONS).slice(0, MODES[mode].count).map(function (q) {
+      var opts = shuffle(q.a.map(function (text, i) { return { text: text, ok: i === q.c }; }));
+      return { q: q.q, opts: opts, why: q.why };
+    });
+    S = { mode: mode, qs: picked, i: 0, score: 0, streak: 0, bestStreak: 0, right: 0, log: [], locked: false, deadline: 0 };
+    buildTrack();
+    showScreen("play");
+    showQuestion();
+  }
+
+  function buildTrack() {
+    var t = $("track");
+    t.innerHTML = "";
+    for (var i = 0; i < S.qs.length; i++) {
+      if (i > 0) { var seg = document.createElement("span"); seg.className = "seg"; t.appendChild(seg); }
+      var n = document.createElement("span"); n.className = "node"; t.appendChild(n);
+    }
+  }
+  function paintTrack() {
+    var nodes = $("track").querySelectorAll(".node");
+    nodes.forEach(function (n, i) {
+      n.className = "node";
+      if (i < S.log.length) n.classList.add(S.log[i].ok ? "right" : "wrong");
+      else if (i === S.i) n.classList.add("now");
+    });
+  }
+
+  function showQuestion() {
+    var q = S.qs[S.i];
+    S.locked = false;
+    $("count").textContent = "Question " + (S.i + 1) + " of " + S.qs.length;
+    $("score").textContent = fmt(S.score);
+    $("prompt").textContent = q.q;
+    $("feedback").hidden = true;
+    paintTrack();
+
+    var box = $("options");
+    box.innerHTML = "";
+    q.opts.forEach(function (o, idx) {
+      var b = document.createElement("button");
+      b.className = "opt";
+      b.type = "button";
+      var k = document.createElement("span"); k.className = "key"; k.textContent = String(idx + 1);
+      var t = document.createElement("span"); t.textContent = o.text;
+      b.appendChild(k); b.appendChild(t);
+      b.addEventListener("click", function () { answer(idx); });
+      box.appendChild(b);
+    });
+
+    $("timer").classList.remove("low");
+    S.deadline = performance.now() + TIME_LIMIT * 1000;
+    clearInterval(timerId);
+    timerId = setInterval(tick, 100);
+    tick();
+  }
+
+  function tick() {
+    var left = Math.max(0, S.deadline - performance.now());
+    $("bar").style.transform = "scaleX(" + (left / (TIME_LIMIT * 1000)) + ")";
+    $("timeText").textContent = Math.ceil(left / 1000) + "s";
+    if (left <= 5000) $("timer").classList.add("low");
+    if (left <= 0) answer(-1);
+  }
+
+  function answer(idx) {
+    if (S.locked) return;
+    S.locked = true;
+    clearInterval(timerId);
+
+    var q = S.qs[S.i];
+    var left = Math.max(0, S.deadline - performance.now()) / 1000;
+    var ok = idx >= 0 && q.opts[idx].ok;
+    var speed = 0, streakBonus = 0, total = 0;
+
+    if (ok) {
+      S.right++;
+      S.streak++;
+      S.bestStreak = Math.max(S.bestStreak, S.streak);
+      speed = Math.round(SPEED_MAX * (left / TIME_LIMIT));
+      streakBonus = Math.min(S.streak - 1, STREAK_CAP) * STREAK_STEP;
+      total = BASE + speed + streakBonus;
+      S.score += total;
+    } else {
+      S.streak = 0;
+    }
+    S.log.push({ q: q.q, ok: ok, timedOut: idx < 0, correct: q.opts.filter(function (o) { return o.ok; })[0].text, chosen: idx >= 0 ? q.opts[idx].text : null, why: q.why });
+
+    var btns = $("options").querySelectorAll(".opt");
+    btns.forEach(function (b, i) {
+      b.disabled = true;
+      if (q.opts[i].ok) b.classList.add("correct");
+      else if (i === idx) b.classList.add("incorrect");
+      else b.classList.add("dim");
+    });
+
+    var fb = $("feedback");
+    fb.className = "feedback " + (ok ? "ok" : "no");
+    $("verdict").textContent = ok ? "Correct" : (idx < 0 ? "Time’s up" : "Not quite");
+    if (ok) {
+      var bits = [BASE + " base", speed + " speed"];
+      if (streakBonus) bits.push(streakBonus + " streak");
+      $("pts").textContent = "+" + total + " points (" + bits.join(", ") + ")";
+    } else {
+      $("pts").textContent = "No points this time. The answer was " + S.log[S.log.length - 1].correct + ".";
+    }
+    $("why").textContent = q.why;
+    $("next").textContent = (S.i === S.qs.length - 1) ? "See my results" : "Next question";
+    fb.hidden = false;
+    $("score").textContent = fmt(S.score);
+    paintTrack();
+    $("next").focus({ preventScroll: false });
+  }
+
+  function next() {
+    if (S.i === S.qs.length - 1) { finish(); return; }
+    S.i++;
+    showQuestion();
+  }
+
+  // ---------- Results ----------
+  function rankFor(acc) {
+    if (acc === 100) return ["Perfect run", "Every answer right. Hard to do with a clock running."];
+    if (acc >= 85) return ["Historian", "You know this period well."];
+    if (acc >= 65) return ["Researcher", "A solid grasp of the main events. A few gaps to fill."];
+    if (acc >= 40) return ["Student", "You’ve got the basics. The review below is a good next step."];
+    return ["Getting started", "Plenty to learn here. Read the explanations below and try again."];
+  }
+
+  function finish() {
+    clearInterval(timerId);
+    var n = S.qs.length;
+    var acc = Math.round((S.right / n) * 100);
+    var rk = rankFor(acc);
+    var key = "israelquiz:best:" + S.mode;
+    var prev = parseInt(store(key), 10) || 0;
+    var isBest = S.score > prev;
+    if (isBest) store(key, S.score);
+
+    $("endKicker").textContent = MODES[S.mode].label + " complete";
+    $("finalScore").textContent = fmt(S.score);
+    $("rank").textContent = rk[0];
+    $("rankNote").textContent = rk[1];
+    $("sCorrect").textContent = S.right + " / " + n;
+    $("sAcc").textContent = acc + "%";
+    $("sStreak").textContent = S.bestStreak;
+    $("bestLine").textContent = isBest
+      ? (prev ? "New personal best. Your previous best was " + fmt(prev) + "." : "That’s your first score on the board for this mode.")
+      : "Your best for this mode is " + fmt(prev) + ".";
+    $("copied").textContent = "";
+
+    var list = $("reviewList");
+    list.innerHTML = "";
+    S.log.forEach(function (r) {
+      var d = document.createElement("div"); d.className = "rev-item";
+      var h = document.createElement("h4");
+      var tag = document.createElement("span");
+      tag.className = "tag " + (r.ok ? "ok" : "no");
+      tag.textContent = r.ok ? "Correct" : (r.timedOut ? "Timed out" : "Missed");
+      h.appendChild(tag);
+      h.appendChild(document.createTextNode(r.q));
+      var p = document.createElement("p");
+      var b = document.createElement("b"); b.textContent = r.correct;
+      p.appendChild(b);
+      p.appendChild(document.createTextNode(". " + r.why));
+      d.appendChild(h); d.appendChild(p);
+      list.appendChild(d);
+    });
+
+    renderBests();
+    showScreen("end");
+  }
+
+  function shareText() {
+    var n = S.qs.length;
+    return "I scored " + fmt(S.score) + " on the History of Israel quiz (" + S.right + "/" + n + " correct, " + rankFor(Math.round(S.right / n * 100))[0] + "). Can you beat it? " + location.href;
+  }
+
+  function copyResult() {
+    var text = shareText();
+    var done = function () { $("copied").textContent = "Copied. Paste it anywhere."; };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else { fallback(); }
+    function fallback() {
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", "");
+      ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) { $("copied").textContent = text; }
+      document.body.removeChild(ta);
+    }
+  }
+
+  // ---------- Wiring ----------
+  document.querySelectorAll(".mode").forEach(function (b) {
+    b.addEventListener("click", function () { startRun(b.getAttribute("data-mode")); });
+  });
+  $("next").addEventListener("click", next);
+  $("again").addEventListener("click", function () { startRun(S.mode); });
+  $("home").addEventListener("click", function () { renderBests(); showScreen("start"); });
+  $("share").addEventListener("click", copyResult);
+
+  document.addEventListener("keydown", function (e) {
+    if ($("play").hidden || !S || S.locked) return;
+    var n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4) { e.preventDefault(); answer(n - 1); return; }
+    var l = e.key.toLowerCase();
+    if (l >= "a" && l <= "d" && !e.ctrlKey && !e.metaKey && !e.altKey) { answer(l.charCodeAt(0) - 97); }
+  });
+
+  renderBests();
+})();
+</script>
+</body>
+</html>
